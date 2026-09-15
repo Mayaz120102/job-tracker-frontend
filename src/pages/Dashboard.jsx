@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
+import ResumeSection from "../components/ResumeSection";
+import { resume } from "react-dom/server";
 
 const Dashboard = () => {
   const [applications, setApplications] = useState([]);
@@ -38,15 +40,15 @@ const Dashboard = () => {
     }
   };
 
-  const next = ()=>{
-      setPage(page+1)
-  }
+  const next = () => {
+    setPage(page + 1);
+  };
 
-  const prev = ()=>{
-    if(page>1){
-      setPage(page-1)
+  const prev = () => {
+    if (page > 1) {
+      setPage(page - 1);
     }
-  }
+  };
 
   const getStatusClasses = (status) => {
     switch (status) {
@@ -136,6 +138,9 @@ const Dashboard = () => {
               <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
                 Actions
               </th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wide">
+                Resume
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -176,15 +181,35 @@ const Dashboard = () => {
                     Delete
                   </button>
                 </td>
+                <td className="px-6 py-4">
+                  <ResumeSection
+                    application={application}
+                    onUploadSuccess={(newResumeUrl) => {
+                      setApplications((prev) =>
+                        prev.map((app) =>
+                          app.id === application.id
+                            ? { ...app, resume_url: newResumeUrl }
+                            : app,
+                        ),
+                      );
+                    }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <div className="px-4 py-6 flex justify-center gap-2">
-        <button onClick={prev} disabled={page===1}> ← Prev</button>
+        <button onClick={prev} disabled={page === 1}>
+          {" "}
+          ← Prev
+        </button>
         <span>Page {page}</span>
-        <button onClick={next} disabled={applications.length<pageSize}> Next →</button>
+        <button onClick={next} disabled={applications.length < pageSize}>
+          {" "}
+          Next →
+        </button>
       </div>
     </div>
   );
